@@ -1,0 +1,24 @@
+# Build artifacts
+build/
+install/
+
+# Generated files
+install_manifest.txt
+log/
+ros2_ws/
+
+# IDE files
+.vscode/
+.idea/
+
+# Compiled Python files
+*.pyc
+
+# Compiled C++ files
+*.o
+*.so
+
+# Miscellaneous
+*.swp
+*.swo
+.DS_Store

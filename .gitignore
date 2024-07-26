@@ -24,3 +24,6 @@ bin/
 
 # Dependency directories
 vendor/
+
+# Dataset
+indoor_dataset/

@@ -65,6 +65,71 @@ CoverMap::CoverMap(std::string file, double width, double height, double resolut
     loadMap(file);
 }
 
+CoverMap::CoverMap(std::string file, int scale)
+{
+    cv::Mat img = cv::imread(file, cv::IMREAD_GRAYSCALE);
+    if (img.empty())
+    {
+        std::cerr << "Error: Unable to load image file " << file << std::endl;
+        return;
+    }
+    this->width = img.cols;
+    this->height = img.rows;
+    this->resolution = 1;
+    this->rows = this->height / resolution;
+    this->cols = this->width / resolution;
+    this->cellSize = resolution * (double)scale;
+    this->cellRows = this->height / cellSize;
+    this->cellCols = this->width / cellSize;
+    this->map = new CoverNode*[rows];
+    for (int i = 0; i < rows; i++)
+    {
+        map[i] = new CoverNode[cols];
+    }
+    this->cellMap = new CoverNode*[cellRows];
+    for (int i = 0; i < cellRows; i++)
+    {
+        cellMap[i] = new CoverNode[cellCols];
+    }
+
+    cv::resize(img, img, cv::Size(cols, rows), 0, 0, cv::INTER_NEAREST);
+    cv::threshold(img, img, 127, 255, cv::THRESH_BINARY);
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            map[i][j].index = cv::Point2i(j, i);
+            map[i][j].position = cv::Point2d(j * resolution, i * resolution);
+            if (img.at<uchar>(i, j) == 0)
+            {
+                map[i][j].isObstacle = true;
+            }
+        }
+    }
+
+    cv::resize(img, img, cv::Size(cellCols, cellRows), 0, 0, cv::INTER_NEAREST);
+    cv::threshold(img, img, 127, 255, cv::THRESH_BINARY);
+
+    freeSpace.clear();
+    for (int i = 0; i < cellRows; i++)
+    {
+        for (int j = 0; j < cellCols; j++)
+        {
+            cellMap[i][j].index = cv::Point2i(j, i);
+            cellMap[i][j].position = cv::Point2d(j * cellSize, i * cellSize);
+            if (img.at<uchar>(i, j) == 0)
+            {
+                cellMap[i][j].isObstacle = true;
+            }
+            else
+            {
+                freeSpace.push_back(cellMap[i][j].position);
+            }
+        }
+    }
+}
+
 CoverMap::~CoverMap()
 {
     if (map != nullptr)

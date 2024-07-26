@@ -49,9 +49,11 @@ public:
     CoverNode** map;
     CoverNode** cellMap;
     std::vector<cv::Point2d> path;
+    std::vector<cv::Point2d> freeSpace;
 public:
     CoverMap();
     CoverMap(std::string file, double width, double height, double resolution, double cellSize);
+    CoverMap(std::string file, int scale);
     ~CoverMap();
 
     void loadMap(std::string file);

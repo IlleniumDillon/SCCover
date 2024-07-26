@@ -1,42 +1,47 @@
 #include <iostream>
+#include <fstream> 
+#include <filesystem>
 
 #include "FileIO.hpp"
 #include "CoverMap.hpp"
 
 int main() 
 {
-    CoverMap coverMap(MAPFILE_PATH,512,512,1,16);
-    coverMap.showMap();
-
-    cv::Point2d start(50,50);
-    cv::Point2d goal(450 ,450);
-    
-    // cv::Mat distanceMap(coverMap.cellRows, coverMap.cellCols, CV_8UC1, cv::Scalar(0));
-    // for (int i = 0; i < coverMap.cellRows; i++)
-    // {
-    //     for (int j = 0; j < coverMap.cellCols; j++)
-    //     {
-    //         double distance = coverMap.planPath(start, coverMap.cellMap[i][j].position);
-    //         distance = distance < 0 ? 0 : distance;
-    //         uchar value = distance / 512 / 1.414 * 255;
-    //         distanceMap.at<uchar>(i, j) = value;
-    //         // std::cout << coverMap.planPath(start, coverMap.cellMap[i][j].position) << std::endl;    
-    //     }
-    // }
-    // cv::resize(distanceMap, distanceMap, cv::Size(512, 512), 0, 0, cv::INTER_NEAREST);
-    // cv::imshow("Distance Map", distanceMap);
-    // cv::waitKey(0);
-    
-    // cv::Mat hotImg;
-    // cv::applyColorMap(distanceMap, hotImg, cv::COLORMAP_HOT);
-    // cv::imshow("Distance Map", hotImg);
-    // cv::waitKey(0);
-
-    coverMap.cover(start, goal);
-    coverMap.showMap();
-
-    // coverMap.cover(goal, start);
+    // CoverMap coverMap(MAPFILE_PATH,512,512,1,16);
     // coverMap.showMap();
+
+    // cv::Point2d start(50,50);
+    // cv::Point2d goal(450 ,450);
+
+    // coverMap.cover(start, goal);
+    // coverMap.showMap();
+
+    std::filesystem::path path = DATASET_PATH;
+    auto files = std::filesystem::directory_iterator(path);
+    int numFiles = 0;
+    for (const auto & entry : files)
+    {
+        numFiles++;
+    }
+    int i = 0;
+    for (const auto & entry : std::filesystem::directory_iterator(path))
+    {
+        i++;
+        // std::cout << entry.path() << std::endl;
+        // std::cout << "======================" << std::endl;
+        std::cout << "Processing: " << i << "/" << numFiles << std::endl;
+        CoverMap coverMap(entry.path().string(), 16);
+
+        int indexStart = std::rand() % coverMap.freeSpace.size();
+        int indexGoal = std::rand() % coverMap.freeSpace.size();
+        while (indexStart == indexGoal)
+        {
+            indexGoal = std::rand() % coverMap.freeSpace.size();
+        }
+
+        coverMap.cover(coverMap.freeSpace[indexStart], coverMap.freeSpace[indexGoal]);
+        // coverMap.showMap();
+    }
     
     return 0;
 }

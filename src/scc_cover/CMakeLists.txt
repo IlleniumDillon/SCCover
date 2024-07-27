@@ -1,25 +1,48 @@
 cmake_minimum_required(VERSION 3.5)
 project(scc_cover)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../ros2support.cmake)
 
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
-find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+FIND_PACKAGES(
+  ament_cmake 
+  ament_cmake_python 
+  rclcpp  
+  rclpy
+  geometry_msgs
+  nav_msgs
+  sensor_msgs
+  std_msgs
+  std_srvs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
+  trajectory_msgs
+  OpenCV
+  Eigen3
+  Boost
+  Threads
+  scc_message
+  scc_simulate
+)
+
+include_directories(
+  ${CMAKE_SOURCE_DIR}/include/nscc_cover
+)
+
+file (GLOB NSCC_COVER_PLAN_SOURCE 
+  "src/nscc_cover/*.cpp"
+)
+BUILD_EXEC(
+  TARGET nscc_cover_plan
+  SOURCES ${NSCC_COVER_PLAN_SOURCE}
+  DEPENDENCIES rclcpp geometry_msgs nav_msgs sensor_msgs std_msgs std_srvs tf2 tf2_geometry_msgs tf2_ros trajectory_msgs scc_message OpenCV Eigen3 Boost Threads
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

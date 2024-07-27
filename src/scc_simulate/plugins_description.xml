@@ -1,0 +1,26 @@
+<library path="scc_rviz_plugin">
+    <class
+        name="rviz_plugin/NSCCCoverTask"
+        type="scc_rviz_plugin::NSCCCoverTask"
+        base_class_type="rviz_common::Tool">
+        <description>
+            This class is a tool for NSCCCoverTask.
+        </description>
+    </class>
+    <class
+        name="rviz_plugin/SCCCoverTask"
+        type="scc_rviz_plugin::SCCCoverTask"
+        base_class_type="rviz_common::Tool">
+        <description>
+            This class is a tool for SCCCoverTask.
+        </description>
+    </class>
+    <class
+        name="rviz_plugin/PolygonMap"
+        type="scc_rviz_plugin::PolygonMap"
+        base_class_type="rviz_common::Tool">
+        <description>
+            This class is a tool for PolygonMap.
+        </description>
+    </class>
+</library>

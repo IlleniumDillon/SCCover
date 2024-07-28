@@ -7,41 +7,41 @@
 
 int main() 
 {
-    // CoverMap coverMap(MAPFILE_PATH,512,512,1,16);
-    // coverMap.showMap();
+    CoverMap coverMap(MAPFILE_PATH,512,512,1,16);
+    coverMap.showMap();
 
-    // cv::Point2d start(50,50);
-    // cv::Point2d goal(450 ,450);
+    cv::Point2d start(50,50);
+    cv::Point2d goal(450 ,450);
 
-    // coverMap.cover(start, goal);
-    // coverMap.showMap();
+    coverMap.cover(start, goal);
+    coverMap.showMap();
 
-    std::filesystem::path path = DATASET_PATH;
-    auto files = std::filesystem::directory_iterator(path);
-    int numFiles = 0;
-    for (const auto & entry : files)
-    {
-        numFiles++;
-    }
-    int i = 0;
-    for (const auto & entry : std::filesystem::directory_iterator(path))
-    {
-        i++;
-        // std::cout << entry.path() << std::endl;
-        // std::cout << "======================" << std::endl;
-        std::cout << "Processing: " << i << "/" << numFiles << std::endl;
-        CoverMap coverMap(entry.path().string(), 16);
+    // std::filesystem::path path = DATASET_PATH;
+    // auto files = std::filesystem::directory_iterator(path);
+    // int numFiles = 0;
+    // for (const auto & entry : files)
+    // {
+    //     numFiles++;
+    // }
+    // int i = 0;
+    // for (const auto & entry : std::filesystem::directory_iterator(path))
+    // {
+    //     i++;
+    //     // std::cout << entry.path() << std::endl;
+    //     // std::cout << "======================" << std::endl;
+    //     std::cout << "Processing: " << i << "/" << numFiles << std::endl;
+    //     CoverMap coverMap(entry.path().string(), 16);
 
-        int indexStart = std::rand() % coverMap.freeSpace.size();
-        int indexGoal = std::rand() % coverMap.freeSpace.size();
-        while (indexStart == indexGoal)
-        {
-            indexGoal = std::rand() % coverMap.freeSpace.size();
-        }
+    //     int indexStart = std::rand() % coverMap.freeSpace.size();
+    //     int indexGoal = std::rand() % coverMap.freeSpace.size();
+    //     while (indexStart == indexGoal)
+    //     {
+    //         indexGoal = std::rand() % coverMap.freeSpace.size();
+    //     }
 
-        coverMap.cover(coverMap.freeSpace[indexStart], coverMap.freeSpace[indexGoal]);
-        // coverMap.showMap();
-    }
+    //     coverMap.cover(coverMap.freeSpace[indexStart], coverMap.freeSpace[indexGoal]);
+    //     // coverMap.showMap();
+    // }
     
     return 0;
 }

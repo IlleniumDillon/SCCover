@@ -17,6 +17,8 @@
 # Build directories
 build/
 bin/
+install/
+log/
 
 # IDE specific files
 .vscode/

@@ -95,6 +95,12 @@ void PolygonMap::onPointSet(double x, double y)
 
 int PolygonMap::onPolygonSet(std::vector<Ogre::Vector3> &p)
 {
+    if (p.size() < 3)
+    {
+        RVIZ_COMMON_LOG_ERROR_STREAM("Polygon must have at least 3 points");
+        status = 0;
+        return (Render);
+    }
     if (type == 0)
     {
         msg.boundary.points.clear();

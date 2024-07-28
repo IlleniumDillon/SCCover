@@ -6,7 +6,8 @@ NSCCCoverNode::NSCCCoverNode()
     loadConfig();
     sub_polygon_map_ = create_subscription<scc_message::msg::PolygonMap>("polygon_map", 1, std::bind(&NSCCCoverNode::polygonMapCallback, this, std::placeholders::_1));
     pub_grid_map_ = create_publisher<nav_msgs::msg::OccupancyGrid>("grid_map", 1);
-    pub_grid_map_->publish(gmap);
+    sub_task_ = create_subscription<scc_message::msg::CoverTask>("nscc_cover_task", 1, std::bind(&NSCCCoverNode::goalCallback, this, std::placeholders::_1));
+    pub_path_ = create_publisher<nav_msgs::msg::Path>("path", 1);
 }
 
 void NSCCCoverNode::loadConfig()
@@ -14,10 +15,12 @@ void NSCCCoverNode::loadConfig()
     declare_parameter("scene_width", 12.0);
     declare_parameter("scene_height", 12.0);
     declare_parameter("position_resolution", 0.05);
+    declare_parameter("coverage_radius", 0.2);
 
     scene_width_ = get_parameter("scene_width").as_double();
     scene_height_ = get_parameter("scene_height").as_double();
     position_resolution_ = get_parameter("position_resolution").as_double();
+    coverage_radius_ = get_parameter("coverage_radius").as_double();
 
     gmap.info.width = scene_width_ / position_resolution_;
     gmap.info.height = scene_height_ / position_resolution_;
@@ -77,5 +80,17 @@ void NSCCCoverNode::polygonMapCallback(const scc_message::msg::PolygonMap::Share
         }
     }
 
+    planner.config(gmap, coverage_radius_);
     pub_grid_map_->publish(gmap);
+}
+
+void NSCCCoverNode::goalCallback(const scc_message::msg::CoverTask::SharedPtr msg)
+{
+    task = *msg;
+    planner.plan(task);
+    RCLCPP_INFO(get_logger(), "Plan finished");
+    RCLCPP_INFO(get_logger(), "Path size: %d", planner.planResult.path.size());
+    nav_msgs::msg::Path path;
+    planner.toMsg(path);
+    pub_path_->publish(path);
 }

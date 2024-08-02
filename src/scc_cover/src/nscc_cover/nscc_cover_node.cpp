@@ -15,7 +15,7 @@ void NSCCCoverNode::loadConfig()
     declare_parameter("scene_width", 12.0);
     declare_parameter("scene_height", 12.0);
     declare_parameter("position_resolution", 0.05);
-    declare_parameter("coverage_radius", 0.2);
+    declare_parameter("coverage_radius", 0.05);
 
     scene_width_ = get_parameter("scene_width").as_double();
     scene_height_ = get_parameter("scene_height").as_double();

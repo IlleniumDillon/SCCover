@@ -353,6 +353,10 @@ void NSCCCover::cover(cv::Point2d start, cv::Point2d goal)
                 current = current->parent;
             }
             std::reverse(tempPath.begin(), tempPath.end());
+
+            while (subCover(tempPath) > 0)
+            {
+            }
             
             for (int i = 0; i < tempPath.size(); i++)
             {
@@ -405,13 +409,13 @@ void NSCCCover::cover(cv::Point2d start, cv::Point2d goal)
                     neighbor->parent = current;
                     neighbor->it = openSet.insert(std::pair<double, CoverNode*>(fCost, neighbor));
                 }
-                else if (gCost >= neighbor->gCost)
+                else if (gCost > neighbor->gCost)
                 {
                     neighbor->gCost = gCost;
-                    neighbor->fCost = gCost + neighbor->hCost;
+                    neighbor->fCost = - gCost - neighbor->hCost;
                     neighbor->parent = current;
                     openSet.erase(neighbor->it);
-                    neighbor->it = openSet.insert(std::pair<double, CoverNode*>(fCost, neighbor));
+                    neighbor->it = openSet.insert(std::pair<double, CoverNode*>(neighbor->fCost, neighbor));
                 }
             }
         }
@@ -441,4 +445,185 @@ void NSCCCover::cover(cv::Point2d start, cv::Point2d goal)
 
 int NSCCCover::subCover(std::vector<cv::Point2d> &temp)
 {
+    int addPath = 0;
+    for (int i = 1; i < temp.size(); i++)
+    {
+        int row_c = (temp[i].y - coverMap.originY) / coverMap.cellSize;
+        int col_c = (temp[i].x - coverMap.originX) / coverMap.cellSize;
+        int row_p = (temp[i - 1].y -  coverMap.originY) / coverMap.cellSize;
+        int col_p = (temp[i - 1].x - coverMap.originX) / coverMap.cellSize;
+
+        // bool goVertical = false;
+        std::vector<cv::Point2i> checkList(4);
+        std::vector<cv::Point2d> addList;
+
+        if (row_c == row_p)
+        {
+            // goVertical = false;
+            // std::cout << "Go Horizontal" << std::endl;
+            cv::Point2i P0, P1, P2, P3;
+            P0 = cv::Point2i(col_p, row_p - 1);
+            if ((P0.x < 0 || P0.x >= coverMap.cellCols) ||
+                (P0.y < 0 || P0.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P0.y][P0.x].isObstacle ||
+                coverMap.cellMap[P0.y][P0.x].isCovered)
+            {
+                checkList[0] = cv::Point2i(-1, -1);
+            }
+            else
+            {
+                checkList[0] = P0;
+            }
+            
+            P1 = cv::Point2i(col_p, row_p + 1);
+            if ((P1.x < 0 || P1.x >= coverMap.cellCols) ||
+                (P1.y < 0 || P1.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P1.y][P1.x].isObstacle ||
+                coverMap.cellMap[P1.y][P1.x].isCovered)
+            {
+                checkList[1] = cv::Point2i(-1, -1);
+            }
+            else 
+            {
+                checkList[1] = P1;
+            }
+
+            P2 = cv::Point2i(col_c, row_c + 1);
+            if ((P2.x < 0 || P2.x >= coverMap.cellCols) ||
+                (P2.y < 0 || P2.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P2.y][P2.x].isObstacle ||
+                coverMap.cellMap[P2.y][P2.x].isCovered)
+            {
+                checkList[2] = cv::Point2i(-1, -1);
+            }
+            else 
+            {
+                checkList[2] = P2;
+            }
+
+            P3 = cv::Point2i(col_c, row_c - 1);
+            if ((P3.x < 0 || P3.x >= coverMap.cellCols) ||
+                (P3.y < 0 || P3.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P3.y][P3.x].isObstacle ||
+                coverMap.cellMap[P3.y][P3.x].isCovered)
+            {
+                checkList[3] = cv::Point2i(-1, -1);
+            }
+            else 
+            {
+                checkList[3] = P3;
+            }
+
+            // std::cout << "Check List: " << P0 << " " << P1 << " " << P2 << " " << P3 << std::endl;
+        }
+        else
+        {
+            // goVertical = true;
+            // std::cout << "Go Vertical" << std::endl;
+            cv::Point2i P0, P1, P2, P3;
+            P0 = cv::Point2i(col_p - 1, row_p);
+            if ((P0.x < 0 || P0.x >= coverMap.cellCols) ||
+                (P0.y < 0 || P0.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P0.y][P0.x].isObstacle ||
+                coverMap.cellMap[P0.y][P0.x].isCovered)
+            {
+                checkList[0] = cv::Point2i(-1, -1);
+            }
+            else
+            {
+                checkList[0] = P0;
+            }
+            
+            P1 = cv::Point2i(col_p + 1, row_p);
+            if ((P1.x < 0 || P1.x >= coverMap.cellCols) ||
+                (P1.y < 0 || P1.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P1.y][P1.x].isObstacle ||
+                coverMap.cellMap[P1.y][P1.x].isCovered)
+            {
+                checkList[1] = cv::Point2i(-1, -1);
+            }
+            else
+            {
+                checkList[1] = P1;
+            }
+
+            P2 = cv::Point2i(col_c + 1, row_c);
+            if ((P2.x < 0 || P2.x >= coverMap.cellCols) ||
+                (P2.y < 0 || P2.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P2.y][P2.x].isObstacle ||
+                coverMap.cellMap[P2.y][P2.x].isCovered)
+            {
+                checkList[2] = cv::Point2i(-1, -1);
+            }
+            else
+            {
+                checkList[2] = P2;
+            }
+
+            P3 = cv::Point2i(col_c - 1, row_c);
+            if ((P3.x < 0 || P3.x >= coverMap.cellCols) ||
+                (P3.y < 0 || P3.y >= coverMap.cellRows) ||
+                coverMap.cellMap[P3.y][P3.x].isObstacle ||
+                coverMap.cellMap[P3.y][P3.x].isCovered)
+            {
+                checkList[3] = cv::Point2i(-1, -1);
+            }
+            else
+            {
+                checkList[3] = P3;
+            }
+
+            // std::cout << "Check List: " << P0 << " " << P1 << " " << P2 << " " << P3 << std::endl;
+        }
+
+        if (checkList[1] != cv::Point2i(-1, -1) &&
+            checkList[2] != cv::Point2i(-1, -1))
+        {
+            // std::cout << "Go 1, 2" << std::endl;
+            cv::Point2d P1 = coverMap.cellMap[checkList[1].y][checkList[1].x].position;
+            coverMap.cellMap[checkList[1].y][checkList[1].x].isCovered = true;
+            cv::Point2d P2 = coverMap.cellMap[checkList[2].y][checkList[2].x].position;
+            coverMap.cellMap[checkList[2].y][checkList[2].x].isCovered = true;
+            temp.insert(temp.begin() + i, P1);
+            temp.insert(temp.begin() + i + 1, P2);
+            addPath += 2;
+        }
+        else if (checkList[0] != cv::Point2i(-1, -1) &&
+            checkList[3] != cv::Point2i(-1, -1))
+        {
+            // std::cout << "Go 0, 3" << std::endl;
+            cv::Point2d P0 = coverMap.cellMap[checkList[0].y][checkList[0].x].position;
+            coverMap.cellMap[checkList[0].y][checkList[0].x].isCovered = true;
+            cv::Point2d P3 = coverMap.cellMap[checkList[3].y][checkList[3].x].position;
+            coverMap.cellMap[checkList[3].y][checkList[3].x].isCovered = true;
+            temp.insert(temp.begin() + i, P0);
+            temp.insert(temp.begin() + i + 1, P3);
+            addPath += 2;
+        }
+        else if (checkList[0] == cv::Point2i(-1, -1) &&
+            checkList[1] != cv::Point2i(-1, -1) &&
+            checkList[2] == cv::Point2i(-1, -1) &&
+            checkList[3] == cv::Point2i(-1, -1))
+        {
+            cv::Point2d P1 = coverMap.cellMap[checkList[1].y][checkList[1].x].position;
+            coverMap.cellMap[checkList[1].y][checkList[1].x].isCovered = true;
+            cv::Point2d Pp = temp[i - 1];
+            temp.insert(temp.begin() + i, P1);
+            temp.insert(temp.begin() + i + 1 , Pp);
+            addPath += 2;
+        }
+        else if (checkList[0] != cv::Point2i(-1, -1) &&
+            checkList[1] == cv::Point2i(-1, -1) &&
+            checkList[2] == cv::Point2i(-1, -1) &&
+            checkList[3] == cv::Point2i(-1, -1))
+        {
+            cv::Point2d P0 = coverMap.cellMap[checkList[0].y][checkList[0].x].position;
+            coverMap.cellMap[checkList[0].y][checkList[0].x].isCovered = true;
+            cv::Point2d Pp = temp[i - 1];
+            temp.insert(temp.begin() + i, P0);
+            temp.insert(temp.begin() + i + 1 , Pp);
+            addPath += 2;
+        }
+    }
+    return addPath;
 }

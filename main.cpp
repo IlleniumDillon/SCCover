@@ -7,11 +7,11 @@
 
 int main() 
 {
-    CoverMap coverMap(MAPFILE_PATH,512,512,1,16);
+    CoverMap coverMap(MAPFILE_PATH,512,512,1,4);
     coverMap.showMap();
 
-    cv::Point2d start(50,50);
-    cv::Point2d goal(450 ,450);
+    cv::Point2d start(50,450);
+    cv::Point2d goal(50 ,460);
 
     coverMap.cover(start, goal);
     coverMap.showMap();

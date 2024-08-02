@@ -221,14 +221,14 @@ void CoverMap::showMap()
     {
         int row = path[i].y / resolution;
         int col = path[i].x / resolution;
-        cv::circle(img, cv::Point(col, row), 2, cv::Scalar(0, 255, 0), -1);
+        cv::circle(img, cv::Point(col, row), 2, cv::Scalar(0, 128, 0), -1);
         if (i > 0)
         {
-            cv::line(img, cv::Point(path[i - 1].x / resolution, path[i - 1].y / resolution), cv::Point(col, row), cv::Scalar(0, 255, 0), 1);
+            cv::line(img, cv::Point(path[i - 1].x / resolution, path[i - 1].y / resolution), cv::Point(col, row), cv::Scalar(0, 128, 0), 1);
         }
-        cv::imshow("Cover Map", img);
+        // cv::imshow("Cover Map", img);
 
-        cv::waitKey(0);
+        // cv::waitKey(0);
     }
 
     cv::imshow("Cover Map", img);
